@@ -1,12 +1,14 @@
-char audiopin = A0;
-int audio = 0;
-int schwelle = 50;
-int arrayLength = 1024;
-String audioString = "";
+//Audioanalyzer 
 
-boolean toggle1 = 0; //storage variable
-
-void setup() {
+int main(void){
+  char audiopin = A0;
+  int audio = 0;
+  int schwelle = 50;
+  int arrayLength = 1024;
+  String audioString = "";
+  
+  boolean toggle1 = 0; //storage variable
+  
   Serial.begin(9600);
   pinMode(2, OUTPUT);
   pinMode(13, OUTPUT);
@@ -36,7 +38,30 @@ void setup() {
 
   //DDRC = DDRC | B11111110; // Set Pin A0 input
   sei();                                  // allow interrupts
+  
+//*************************Cyclic*Code******************                                                                                                                                                     
+  while(1) { 
+    if (toggle1){
+     // Every Second
+    }
+    audio = analogRead(audiopin);
+    audioString = "";
+    int i = 0;
+    while (i < audio/6){
+      audioString.concat("|");
+      i++;
+      }
+    if (audio > schwelle){
+      digitalWrite(2,HIGH);
+    }
+    else{
+      digitalWrite(2,LOW);
+    }
+    //Serial.println(audioString);
+  }
 }
+
+//*************************ISRs**************************
 
 // Interrupt-handler timer0 @40kHz
 ISR(TIMER0_COMPA_vect){
@@ -54,27 +79,4 @@ ISR(TIMER1_COMPA_vect){
     digitalWrite(13,LOW);
     toggle1 = 1;
   }
-}
-                                                                                                                                                         
-void loop() {
-  if (toggle1){
-    Serial.print(", CS10 = ");
-    Serial.print(CS10);
-        Serial.print(", CS12 = ");
-    Serial.print(CS12);
-  }
-  audio = analogRead(audiopin);
-  audioString = "";
-  int i = 0;
-  while (i < audio/6){
-    audioString.concat("|");
-    i++;
-    }
-  if (audio > schwelle){
-    digitalWrite(2,HIGH);
-  }
-  else{
-    digitalWrite(2,LOW);
-  }
-  //Serial.println(audioString);
 }
